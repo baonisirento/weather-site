@@ -9,8 +9,12 @@ body {
 }
 
 .container {
-    margin-top: 80px; /* 避免导航栏遮挡内容 */
-    /* 其他原有样式不变 */
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 500px;
 }
 
 h1 {
@@ -57,43 +61,4 @@ button:hover {
 #weather-result h2 {
     color: #1a73e8;
     margin-top: 0;
-}
-/* 导航栏样式 */
-.navbar {
-    background: #1a73e8;
-    padding: 1rem;
-    position: fixed;
-    width: 100%;
-    top: 0;
-    left: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.nav-brand {
-    color: white;
-    font-size: 1.5rem;
-    margin-left: 20px;
-}
-.nav-links a {
-    color: white;
-    text-decoration: none;
-    margin-right: 20px;
-    transition: opacity 0.3s;
-}
-.nav-links a:hover {
-    opacity: 0.8;
-}
-/* ===== 视频页面登录表单样式 ===== */
-#login-section {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 1.5rem;
-    max-width: 300px;
-}
-#login-section input {
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
 }
