@@ -2,20 +2,346 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>万花筒天气预报</title>
-    <!-- 链接外部 CSS 文件 -->
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万花筒工具大全</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "微软雅黑", sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* 头部样式 */
+        .header {
+            width: 100%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 5px 0;
+        }
+        
+        /* 水印样式 */
+        .watermark {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            font-size: 24px;
+            color: #0066ff;
+            font-weight: bold;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        /* 左上角网站标题 */
+        .site-title {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            font-size: 24px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        /* 居中搜索框容器 */
+        .search-container {
+            display: flex;
+            width: 60%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 5px;
+            padding-top: 0;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* 新增的搜索文字样式 */
+        .search-text {
+            position: absolute;
+            right: 20px;       /* 控制文字距离右边界的距离 */
+            top: 50%;          /* 垂直居中 */
+            transform: translateY(-50%); /* 精确居中 */
+            color: #666;       /* 文字颜色 */
+            font-size: 16px;   /* 文字大小 */
+            pointer-events: none; /* 防止点击干扰输入框 */
+        }
+
+
+        /* 搜索框样式 */
+        #searchInput {
+            width: 120%;
+            max-width: 700px;
+            padding: 15px 20px;
+            border: 2px solid #3498db;
+            border-radius: 30px;
+            font-size: 18px;
+            outline: none;
+        }
+
+        /* 内嵌文字样式 */
+        .inline-search-text {
+            position: absolute;
+            right: 15px;          /* 距离右侧15像素 */
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3498db;       /* 与边框同色 */
+            font-weight: bold;
+            pointer-events: none; /* 禁止交互 */
+            background: white;    /* 覆盖输入框背景 */
+            padding: 0 8px;       /* 增加左右留白 */
+        }
+
+        /* 工具分类容器 */
+        .tools-container {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 30px 5%;
+            margin-top: 40px;
+        }
+
+        /* 单个分类卡片样式 */
+        .tool-card {
+            margin-top: 150px; /* 向下移动 */
+            background: white;
+            border-radius: 10px;
+            padding: 30px 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            width: 100%;
+            min-height: 300px;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* 分类标题样式 */
+        .category-title {
+            color: #3498db;
+            margin-bottom: 1px;  /* ← 这行被修改过 */
+            font-size: 20px;
+        }
+
+        /* 工具链接列表 */
+        .tool-links {
+            list-style: none;
+            margin-top: 50px;  /* ← 这行是新增的 */
+        }
+        
+        /* deepseek备选分类的特殊布局 */
+        .tool-card:nth-child(8) .tool-links {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .tool-card:nth-child(8) .tool-links li {
+            width: 50%;
+            padding: 0 5px;
+            box-sizing: border-box;
+        }
+
+        .tool-links li {
+            margin: 10px 0;  /* ← 这行被修改过 */
+        }
+
+        .tool-links a {
+            color: #2c3e50;
+            text-decoration: none;
+            display: block;
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .tool-links a:hover {
+            background: #f0f8ff;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .site-title {
+                font-size: 20px;
+                left: 10px;
+            }
+            
+            #searchInput {
+                width: 80%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🌤️ 万花筒天气预报</h1>
-        <div class="search-box">
-            <input type="text" id="city-input" placeholder="请输入城市名称（如：beijing）">
-            <button onclick="getWeather()">查询天气</button>
+    <!-- 水印 -->
+    <div class="watermark">生态那小子</div>
+    
+    <!-- 网站头部 -->
+    <div class="header">
+        <div class="site-title">生态那小子</div>
+        <div class="search-container">
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="搜索您需要的工具..."
+                autocomplete="off"
+            >
         </div>
-        <div id="weather-result"></div>
     </div>
-    <!-- 链接外部 JavaScript 文件 -->
-    <script src="script.js"></script>
+
+    <!-- 工具分类区域 -->
+    <div class="tools-container">
+        <!-- 一键抠图分类 -->
+        <div class="tool-card">
+            <h2 class="category-title">一键抠图工具</h2>
+            <ul class="tool-links">
+                <li><a href="https://www.remove.photos/" target="_blank">AI智能抠图工具</a></li>
+                <li><a href="https://www.gaoding.com/editor/koutu/clip" target="_blank">在线证件照换背景</a></li>
+                <li><a href="https://www.unscreen.com/" target="_blank">去除视频背景</a></li>
+            </ul>
+        </div>
+
+        <!-- 一键压缩分类 -->
+        <div class="tool-card">
+            <h2 class="category-title">一键压缩工具</h2>
+            <ul class="tool-links">
+                <li><a href="https://tools.pdf24.org/zh/compress-pdf" target="_blank">PDF压缩工具</a></li>
+                <li><a href="https://www.picdiet.com/zh-cn" target="_blank">高清图片压缩</a></li>
+                <li><a href="https://tools.rotato.app/compress" target="_blank">视频压缩</a></li>
+            </ul>
+        </div>
+
+        <!-- 一键转格式分类 -->
+        <div class="tool-card">
+            <h2 class="category-title">一键转格式工具</h2>
+            <ul class="tool-links">
+                <li><a href="https://cdkm.com/cn/" target="_blank">视频格式转换器</a></li>
+                <li><a href="https://www.aconvert.com/cn/audio/" target="_blank">音频格式转换工具</a></li>
+                
+            </ul>
+        </div>
+
+        <!-- 动漫识别分类 -->
+        <div class="tool-card">
+            <h2 class="category-title">动漫识别工具</h2>
+            <ul class="tool-links">
+                <li><a href="https://trace.moe/?ref=zhanid.com" target="_blank">截图识别动漫</a></li>
+            </ul>
+        </div>
+
+        <!-- 修理电子设备分类 -->
+        <div class="tool-card">
+            <h2 class="category-title">修理电子设备工具</h2>
+            <ul class="tool-links">
+                <li><a href="https://zh.ifixit.com/" target="_blank">维修电子设备</a></li>
+            </ul>
+        </div>
+
+        <!-- AI生图工具分类 -->
+        <div class="tool-card">
+            <h2 class="category-title">AI生图工具</h2>
+            <ul class="tool-links">
+                <li><a href="https://www.zaohaowu.com/about" target="_blank">AI生图</a></li>
+            </ul>
+        </div>
+
+        <!-- AI生成PPT分类 -->
+        <div class="tool-card">
+            <h2 class="category-title">AI生成PPT</h2>
+            <ul class="tool-links">
+                <li><a href="https://kimi.moonshot.cn/kimiplus/conpg18t7lagbbsfqksg" target="_blank">KimiPPT助手</a></li>
+            </ul>
+        </div>
+        <!-- deepseek备选分类 -->
+        <div class="tool-card">
+            <h2 class="category-title">deepseek备选</h2>
+            <ul class="tool-links">
+                <li><a href="https://chat.baidu.com/search?extParams=%7B%22enter_type%22%3A%22chat_url%22%7D&isShowHello=1" target="_blank">百度</a></li>
+                <li><a href="https://deepinfra.com/chat/" target="_blank">deepinfra</a></li>
+                <li><a href="https://flowith.io/blank" target="_blank">flowith</a></li>
+                <li><a href="https://zhida.zhihu.com/" target="_blank">知乎</a></li>
+                <li><a href="https://build.nvidia.com/deepseek-ai/deepseek-r1" target="_blank">英伟达</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 搜索功能基础实现（后续可扩展）
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.tool-card');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+    </script>
+    
+    <!-- 免责声明区域 -->
+    <footer style="text-align: center; padding: 20px; margin-top: 30px;">
+        <a href="#" id="contactLink" style="color: #3498db; text-decoration: none; margin-right: 20px;">
+            <i class="fa fa-envelope" style="margin-right: 5px;"></i>联系我
+        </a>
+        <span id="contactContent" style="display: none; color: #3498db;">3185449418@qq.com</span>
+        <a href="#" id="disclaimerLink" style="color: #3498db; text-decoration: none;">免责声明</a>
+        <div id="disclaimerContent" style="display: none; margin-top: 20px; padding: 20px; background: #f9f9f9; border-radius: 5px; text-align: left;">
+            <h3>一、网站性质</h3>
+            <p>本站为第三方工具导航平台，所有工具信息均来源于网络公开内容，本站不开发、不运营任何工具。</p>
+            <p>本站与工具开发者无商业合作关系，提及的工具名称、商标均归属原权利人。</p>
+            
+            <h3>二、内容责任</h3>
+            <p>本站提供的工具描述可能存在滞后性，请以工具官网信息为准，使用任何工具产生的风险需自行承担。</p>
+            <p>若发现本站收录侵权内容，请邮件至 [3185449418@qq.com] 提交以下材料：</p>
+            <ul>
+                <li>侵权内容的具体网址</li>
+                <li>版权证明文件</li>
+                <li>您的身份证明</li>
+            </ul>
+            <p>我们将在48小时内核实并处理</p>
+            
+            <h3>三、用户责任</h3>
+            <p>禁止利用本站从事以下行为：</p>
+            <ul>
+                <li>传播破解工具/盗版软件</li>
+                <li>恶意抓取数据（每日请求超过100次将封禁IP）</li>
+                <li>发布虚假或违法信息</li>
+            </ul>
+            <p>用户通过本站访问第三方工具时，应遵守该工具的服务条款。</p>
+            
+            <h3>四、免责条款</h3>
+            <p>本站不承担以下责任：</p>
+            <ul>
+                <li>因工具服务变更/终止导致的损失</li>
+                <li>用户违反本声明引发的法律后果</li>
+                <li>不可抗力导致的服务中断（如服务器故障超过72小时）</li>
+            </ul>
+            
+            <h3>五、声明更新</h3>
+            <p>我们可能不定期修订本声明，修订内容将在本站公告栏公示，恕不另行通知。</p>
+            
+            <p>生效日期：2025年4月5日</p>
+        </div>
+    </footer>
+    
+    <script>
+        // 免责声明交互
+        document.getElementById('disclaimerLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            const content = document.getElementById('disclaimerContent');
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        // 联系方式交互
+        document.getElementById('contactLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            const contact = document.getElementById('contactContent');
+            contact.style.display = contact.style.display === 'none' ? 'inline' : 'none';
+        });
+    </script>
 </body>
 </html>
