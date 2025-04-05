@@ -381,14 +381,7 @@
             </ul>
         </div>
         
-        <!-- 视频播放器区域 -->
-        <div id="videoPlayer" style="position: fixed; left: 150px; top: 150px; width: 640px; height: 360px; background: #000; display: none; z-index: 1000;">
-            <video id="learningVideo" controls style="width: 100%; height: 100%;">
-                <source src="file:///C:/Users/w/Desktop/工程/网站/万花筒/视频/测试/沙鹰4杀.mp4" type="video/mp4">
-                您的浏览器不支持视频播放
-            </video>
-            <button onclick="document.getElementById('videoPlayer').style.display='none'" style="position: absolute; top: -30px; right: 0; background: #f00; color: white; border: none; padding: 5px 10px; cursor: pointer;">关闭</button>
-        </div>
+        <video src="file:///C:/Users/w/Desktop/工程/网站/万花筒/视频/测试/沙鹰4杀.mp4" controls width="600" style="position: fixed; left: 150px; top: 150px; z-index: 1000; display: none;" id="learningVideo"></video>
         
         <!-- 优学院分类 -->
         <div class="tool-card">
@@ -426,7 +419,7 @@
                 
                 // 如果是学习通分类，显示视频
                 if(categoryName === '学习通') {
-                    document.getElementById('videoPlayer').style.display = 'block';
+                    document.getElementById('learningVideo').style.display = 'block';
                     document.getElementById('learningVideo').play();
                 } else {
                     // 其他分类保持原跳转逻辑
