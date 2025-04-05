@@ -1,33 +1,46 @@
-async function getWeather() {
-    // 从输入框获取中文城市名称
-    const city = document.getElementById("city-input").value.trim();
-    if (!city) {
-        alert("请输入城市名称！");
-        return;
-    }
+// 搜索功能实现
+const searchInput = document.getElementById('searchInput');
+const toolCards = document.querySelectorAll('.tool-card');
 
-    // 使用 Cloudflare Worker 代理地址（替换成你的 Worker 地址）
-    const workerUrl = "https://weather-proxy.kejichao44407330.workers.dev/";
-
-    try {
-        // 发送请求到 Worker（自动处理中文编码）
-        const response = await fetch(workerUrl + encodeURIComponent(city));
-        const data = await response.json();
-
-        if (data.cod === 200) {
-            const weatherHtml = `
-                <h2>${data.name}，${data.sys.country}</h2>
-                <p>🌡️ 温度：${data.main.temp}°C</p>
-                <p>☁️ 天气：${data.weather[0].description}</p>
-                <p>💧 湿度：${data.main.humidity}%</p>
-                <p>🌪️ 风速：${data.wind.speed} 米/秒</p>
-                <img src="http://openweathermap.org/img/wn/${data.weather[0].icon}.png">
-            `;
-            document.getElementById("weather-result").innerHTML = weatherHtml;
-        } else {
-            alert("城市未找到，请检查输入！");
-        }
-    } catch (error) {
-        alert("请求失败，请稍后重试！");
-    }
+// 从JSON加载工具数据
+function loadToolsData() {
+    fetch('../data/tools.json')
+        .then(response => response.json())
+        .then(data => renderTools(data))
+        .catch(error => console.error('Error loading tools data:', error));
 }
+
+// 渲染工具卡片
+function renderTools(toolsData) {
+    const container = document.querySelector('.tools-container');
+    container.innerHTML = '';
+    
+    toolsData.forEach(category => {
+        const card = document.createElement('div');
+        card.className = 'tool-card';
+        
+        card.innerHTML = `
+            <h2 class="category-title">${category.name}</h2>
+            <ul class="tool-links">
+                ${category.tools.map(tool => 
+                    `<li><a href="${tool.link}" target="_blank">${tool.name}</a></li>`
+                ).join('')}
+            </ul>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+// 搜索功能
+searchInput.addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    
+    toolCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(searchTerm) ? 'block' : 'none';
+    });
+});
+
+// 页面加载时初始化
+window.addEventListener('DOMContentLoaded', loadToolsData);
