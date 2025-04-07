@@ -381,7 +381,15 @@
             </ul>
         </div>
         
-        <video src="file:///C:/Users/w/Desktop/工程/网站/万花筒/视频/测试/沙鹰4杀.mp4" controls width="600" style="position: fixed; left: 150px; top: 150px; z-index: 1000; display: none;" id="learningVideo"></video>
+        <!-- 视频播放器容器 -->
+        <div id="videoContainer" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.2); z-index: 1000;">
+            <h2 style="font-size: 36px; font-family: 'SimSun', serif; text-align: center; margin-bottom: 20px;">学习通自动刷网课教程</h2>
+            <video id="videoPlayer" width="1000" height="630" controls>
+                <source src="https://wanhuatonguskg.oss-cn-guangzhou.aliyuncs.com/%E6%8B%9B%E7%AC%91.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <button id="closeVideo" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+        </div>
         
         <!-- 优学院分类 -->
         <div class="tool-card">
@@ -411,21 +419,26 @@
             });
         });
         
-        // 分类标题点击事件
+        // 分类标题点击跳转到分类页面
         document.querySelectorAll('.category-title').forEach(title => {
             title.addEventListener('click', function(e) {
                 e.preventDefault();
                 const categoryName = this.textContent.trim();
                 
-                // 如果是学习通分类，显示视频
-                if(categoryName === '学习通') {
-                    document.getElementById('learningVideo').style.display = 'block';
-                    document.getElementById('learningVideo').play();
-                } else {
-                    // 其他分类保持原跳转逻辑
-                    window.location.href = `category.html?type=${encodeURIComponent(categoryName)}`;
+                // 学习通分类特殊处理
+                if (categoryName === '学习通') {
+                    document.getElementById('videoContainer').style.display = 'block';
+                    return;
                 }
+                
+                window.location.href = `category.html?type=${encodeURIComponent(categoryName)}`;
             });
+        });
+        
+        // 关闭视频播放器
+        document.getElementById('closeVideo').addEventListener('click', function() {
+            document.getElementById('videoContainer').style.display = 'none';
+            document.getElementById('videoPlayer').pause();
         });
     </script>
     
