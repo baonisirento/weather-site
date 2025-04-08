@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分类工具 - 万花筒工具大全</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "微软雅黑", sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* 头部样式 */
+        .header {
+            width: 100%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 5px 0;
+        }
+        
+        /* 水印样式 */
+        .watermark {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            font-size: 24px;
+            color: #0066ff;
+            font-weight: bold;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        /* 左上角网站标题 */
+        .site-title {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            font-size: 24px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        /* 工具分类容器 */
+        .tools-container {
+            display: block;
+            padding: 20px;
+            margin: 60px auto 0;
+            max-width: 800px;
+        }
+        
+        /* 单个分类卡片样式 */
+        .tool-card {
+            position: relative;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 分类标题样式 */
+        .category-title {
+            color: #3498db;
+            margin: 0;
+            font-size: 18px;
+        }
+
+        /* 工具链接列表 */
+        .tool-links {
+            list-style: none;
+            padding: 10px 0 0;
+        }
+
+        .tool-links li {
+            margin: 10px 0;
+        }
+
+        .tool-links a {
+            color: #2c3e50;
+            text-decoration: none;
+            display: block;
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .tool-links a:hover {
+            background: #f0f8ff;
+        }
+
+        /* deepseek备选分类的特殊布局 */
+        .tool-card.deepseek .tool-links {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .tool-card.deepseek .tool-links li {
+            width: 50%;
+            padding: 0 5px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <!-- 水印 -->
+    <div class="watermark">生态那小子</div>
+    
+    <!-- 网站头部 -->
+    <div class="header">
+        <div class="site-title">生态那小子</div>
+    </div>
+
+    <!-- 工具分类区域 -->
+    <div class="tools-container">
+        <div class="tool-card" id="toolCard">
+            <h2 class="category-title" id="categoryTitle"></h2>
+            <ul class="tool-links" id="toolLinks"></ul>
+        </div>
+    </div>
+
+    <script>
+        // 从URL参数获取分类类型
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryType = urlParams.get('type');
+        
+        // 分类数据
+        const categories = {
+            "一键抠图工具": [
+                {name: "AI智能抠图工具", url: "https://www.remove.photos/"},
+                {name: "在线证件照换背景", url: "https://www.gaoding.com/editor/koutu/clip"},
+                {name: "去除视频背景", url: "https://www.unscreen.com/"}
+            ],
+            "一键压缩工具": [
+                {name: "PDF压缩工具", url: "https://tools.pdf24.org/zh/compress-pdf"},
+                {name: "高清图片压缩", url: "https://www.picdiet.com/zh-cn"},
+                {name: "视频压缩", url: "https://tools.rotato.app/compress"}
+            ],
+            "一键转格式工具": [
+                {name: "视频格式转换器", url: "https://cdkm.com/cn/"},
+                {name: "音频格式转换工具", url: "https://www.aconvert.com/cn/audio/"}
+            ],
+            "动漫识别工具": [
+                {name: "截图识别动漫", url: "https://trace.moe/?ref=zhanid.com"}
+            ],
+            "修理电子设备工具": [
+                {name: "维修电子设备", url: "https://zh.ifixit.com/"}
+            ],
+            "AI生图工具": [
+                {name: "AI生图", url: "https://www.zaohaowu.com/about"}
+            ],
+            "AI生成PPT": [
+                {name: "KimiPPT助手", url: "https://kimi.moonshot.cn/kimiplus/conpg18t7lagbbsfqksg"}
+            ],
+            "deepseek备选": [
+                {name: "百度", url: "https://chat.baidu.com/search?extParams=%7B%22enter_type%22%3A%22chat_url%22%7D&isShowHello=1"},
+                {name: "deepinfra", url: "https://deepinfra.com/chat/"},
+                {name: "flowith", url: "https://flowith.io/blank"},
+                {name: "知乎", url: "https://zhida.zhihu.com/"},
+                {name: "英伟达", url: "https://build.nvidia.com/deepseek-ai/deepseek-r1"}
+            ]
+        };
+
+        // 加载对应分类的内容
+        if (categoryType && categories[categoryType]) {
+            const toolCard = document.getElementById('toolCard');
+            const categoryTitle = document.getElementById('categoryTitle');
+            const toolLinks = document.getElementById('toolLinks');
+            
+            // 设置分类标题
+            categoryTitle.textContent = categoryType;
+            
+            // 如果是deepseek备选分类，添加特殊类名
+            if (categoryType === 'deepseek备选') {
+                toolCard.classList.add('deepseek');
+            }
+            
+            // 添加工具链接
+            categories[categoryType].forEach(tool => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = tool.url;
+                a.textContent = tool.name;
+                a.target = '_blank';
+                li.appendChild(a);
+                toolLinks.appendChild(li);
+            });
+        } else {
+            // 如果分类不存在，显示错误信息
+            document.getElementById('categoryTitle').textContent = '分类不存在';
+        }
+    </script>
+</body>
+</html>
